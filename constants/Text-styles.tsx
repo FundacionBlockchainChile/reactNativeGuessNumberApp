@@ -1,4 +1,4 @@
-import { StyleSheet } from 'react-native'
+import { StyleSheet, Dimensions } from 'react-native'
 import Colors from '../constants/Colors'
 
 export default StyleSheet.create({
@@ -7,6 +7,7 @@ export default StyleSheet.create({
   },
   bodyText: {
     fontFamily: 'openSans',
+    fontSize: Dimensions.get('window').height > 600 ? 20 : 15,
   },
   title: {
     fontFamily: 'ariana',

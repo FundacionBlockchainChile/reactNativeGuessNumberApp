@@ -1,5 +1,13 @@
 import React, { useState, useRef, useEffect } from 'react'
-import { StyleSheet, Text, View, Button, Alert, ScrollView } from 'react-native'
+import {
+  StyleSheet,
+  Text,
+  View,
+  Button,
+  Alert,
+  ScrollView,
+  Dimensions,
+} from 'react-native'
 import NumberContainer from '../components/NumberContainer'
 import Card from '../components/Card'
 import MainButton from '../components/MainButton'
@@ -33,12 +41,31 @@ const GameScreen = (props: any) => {
   const initialGuess = generateRandomBetween(1, 100, props.userChoice)
   const [currentGuess, setCurrentGuess] = useState(initialGuess)
   const [pastGuesses, setpastGuesses] = useState([initialGuess])
-  const [rounds, setRounds] = useState(0)
+  // const [rounds, setRounds] = useState(0)
+  const [availableDeviceWidth, setAvailableDeviceWidth] = useState(
+    Dimensions.get('window').width
+  )
+  const [availableDeviceHeight, setAvailableDeviceHeight] = useState(
+    Dimensions.get('window').height
+  )
 
   const currentLow = useRef(1)
   const currentHight = useRef(100)
 
   const { userChoice, onGameOver } = props
+
+  useEffect(() => {
+    const updateLayout = () => {
+      setAvailableDeviceWidth(Dimensions.get('window').width)
+      setAvailableDeviceHeight(Dimensions.get('window').height)
+    }
+
+    Dimensions.addEventListener('change', updateLayout)
+
+    return () => {
+      Dimensions.removeEventListener('change', updateLayout)
+    }
+  })
 
   useEffect(() => {
     if (currentGuess === userChoice) {
@@ -68,6 +95,37 @@ const GameScreen = (props: any) => {
     )
     setCurrentGuess(nextNumber)
     setpastGuesses((curPastGuesses) => [nextNumber, ...curPastGuesses])
+  }
+
+  if (availableDeviceHeight < 500) {
+    return (
+      <View style={styles.screen}>
+        <Text>Opponent's Guess</Text>
+        <View style={styles.controls}>
+          <MainButton
+            onPress={() => nextGuessHandler('lower')}
+            color={{ backgroundColor: Colors.primary }}
+          >
+            <Ionicons name="remove" size={24} color="white" />
+          </MainButton>
+          <NumberContainer>{currentGuess}</NumberContainer>
+          <MainButton
+            onPress={() => nextGuessHandler('greater')}
+            color={{ backgroundColor: Colors.secondary }}
+          >
+            <Ionicons name="add" size={24} color="white" />
+          </MainButton>
+        </View>
+
+        <View style={styles.listContainer}>
+          <ScrollView contentContainerStyle={styles.list}>
+            {pastGuesses.map((guess, index) =>
+              renderListItem(guess, pastGuesses.length - index)
+            )}
+          </ScrollView>
+        </View>
+      </View>
+    )
   }
 
   return (
@@ -113,6 +171,12 @@ const styles = StyleSheet.create({
     width: 300,
     maxWidth: '80%',
   },
+  controls: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    alignItems: 'center',
+    width: '80%',
+  },
   listContainer: {
     flex: 1,
     width: '80%',
@@ -123,7 +187,7 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
   },
   listItem: {
-    width: '50%',
+    width: Dimensions.get('window').width > 300 ? '60%' : '80%',
     borderColor: Colors.primary,
     borderWidth: 1,
     padding: 15,

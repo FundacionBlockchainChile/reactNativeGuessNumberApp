@@ -3,11 +3,13 @@ import {
   StyleSheet,
   Text,
   View,
-  Button,
   TouchableWithoutFeedback,
   Keyboard,
-  TextInput,
   Alert,
+  Dimensions,
+  ScrollView,
+  KeyboardAvoidingViewBase,
+  KeyboardAvoidingView,
 } from 'react-native'
 import Card from '../components/Card'
 import Input from '../components/Input'
@@ -70,29 +72,31 @@ const StarGameScreen = (props: any) => {
   }
 
   return (
-    <TouchableWithoutFeedback
-      onPress={() => {
-        Keyboard.dismiss()
-      }}
-    >
-      <View style={styles.screen}>
-        <Text style={[styles.title, DefaultStyles.title]}>
-          Star a new Game!
-        </Text>
-        <Card style={styles.inputContainer}>
-          <Text>Select a number</Text>
-          <Input
-            style={styles.input}
-            blurOnSubmit
-            autoCapitalize="none"
-            autoCorrect={false}
-            keyboardType="number-pad"
-            maxLength={2}
-            onChangeText={numberInputHandler}
-            value={enteredValue}
-          />
-          <View style={styles.buttonContainer}>
-            {/* <View style={styles.btn}>
+    <ScrollView>
+      <KeyboardAvoidingView behavior="position" keyboardVerticalOffset={45}>
+        <TouchableWithoutFeedback
+          onPress={() => {
+            Keyboard.dismiss()
+          }}
+        >
+          <View style={styles.screen}>
+            <Text style={[styles.title, DefaultStyles.title]}>
+              Star a new Game!
+            </Text>
+            <Card style={styles.inputContainer}>
+              <Text>Select a number</Text>
+              <Input
+                style={styles.input}
+                blurOnSubmit
+                autoCapitalize="none"
+                autoCorrect={false}
+                keyboardType="number-pad"
+                maxLength={2}
+                onChangeText={numberInputHandler}
+                value={enteredValue}
+              />
+              <View style={styles.buttonContainer}>
+                {/* <View style={styles.btn}>
               <Button
                 title="Reset"
                 onPress={resetInputHandler}
@@ -106,23 +110,25 @@ const StarGameScreen = (props: any) => {
                 color={Colors.secondary}
               />
             </View> */}
-            <MainButton
-              onPress={resetInputHandler}
-              color={{ backgroundColor: Colors.primary }}
-            >
-              Reset
-            </MainButton>
-            <MainButton
-              onPress={confirmInputHandler}
-              color={{ backgroundColor: Colors.secondary }}
-            >
-              Confirm
-            </MainButton>
+                <MainButton
+                  onPress={resetInputHandler}
+                  color={{ backgroundColor: Colors.primary }}
+                >
+                  Reset
+                </MainButton>
+                <MainButton
+                  onPress={confirmInputHandler}
+                  color={{ backgroundColor: Colors.secondary }}
+                >
+                  Confirm
+                </MainButton>
+              </View>
+            </Card>
+            {confirmedNumber}
           </View>
-        </Card>
-        {confirmedNumber}
-      </View>
-    </TouchableWithoutFeedback>
+        </TouchableWithoutFeedback>
+      </KeyboardAvoidingView>
+    </ScrollView>
   )
 }
 
@@ -137,8 +143,8 @@ const styles = StyleSheet.create({
     marginVertical: 10,
   },
   inputContainer: {
-    width: 300,
-    maxWidth: '90%',
+    maxWidth: 350,
+    width: Dimensions.get('window').width > 300 ? '90%' : '98%',
     alignItems: 'center',
   },
   buttonContainer: {
